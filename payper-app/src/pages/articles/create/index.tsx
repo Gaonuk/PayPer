@@ -16,12 +16,6 @@ import { useCallback, useEffect, useRef, useState } from "react"
 import { usePostArticle } from "@/integrations/payper-protocol/hooks/write"
 import storeFiles from "@/integrations/ipfs/use-store-files"
 
-interface Post {
-  id: string
-  title: string
-  content: any
-}
-
 type FormData = z.infer<typeof postPatchSchema>
 
 export default function Editor() {
@@ -85,21 +79,21 @@ export default function Editor() {
   async function onSubmit(data: FormData) {
     setData(data);
 
-    // const blocks = await ejInstance.current?.save()
-    // console.log('blocks', blocks);
+    const blocks = await ref.current?.save()
+    console.log('blocks', blocks);
 
-    // const blob = new Blob([JSON.stringify({
-    //   title: data.title,
-    //   content: blocks
-    // })], { type: 'application/json' })
+    const blob = new Blob([JSON.stringify({
+      title: data.title,
+      content: blocks
+    })], { type: 'application/json' })
 
-    // const files = [
-    //   new File([blob], 'content.json')
-    // ]
+    const files = [
+      new File([blob], 'content.json')
+    ]
 
-    // const cid = await storeFiles(files);
-    // console.log('yay cid', cid);
-    // setArticleUrl(`https://${cid}.ipfs.w3s.link/content.json`);
+    const cid = await storeFiles(files);
+    console.log('yay cid', cid);
+    setArticleUrl(`https://${cid}.ipfs.w3s.link/content.json`);
     return toast({
       description: "Your post has been published!",
     })
