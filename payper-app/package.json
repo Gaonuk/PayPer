@@ -51,9 +51,9 @@
     "tailwindcss-animate": "^1.0.7",
     "viem": "^1.16.5",
     "wagmi": "^1.4.3",
+    "web3": "^4.2.0",
     "web3.storage": "^4.5.5",
-    "zod": "^3.22.4",
-    "web3": "^4.2.0"
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@editorjs/code": "^2.8.0",
@@ -66,6 +66,7 @@
     "@editorjs/simple-image": "^1.5.1",
     "@editorjs/table": "^2.2.2",
     "@graphprotocol/client-cli": "^3.0.0",
+    "@types/editorjs__header": "^2.6.2",
     "@types/node": "^20.8.6",
     "@types/react": "^18.2.28",
     "@types/react-dom": "^18.2.13",
