@@ -1,3 +1,5 @@
+"use client"
+
 import MoreArticles from '../components/more-articles'
 import HeroPost from '../components/hero-post'
 import { useEffect, useState } from 'react'

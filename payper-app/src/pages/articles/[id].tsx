@@ -1,3 +1,5 @@
+"use client"
+
 import Avatar from '@/components/avatar'
 import DateComponent from '@/components/date'
 import CoverImage from '@/components/cover-image'
@@ -7,9 +9,9 @@ import { newsTypeEnum } from '@/lib/';
 import { useParams } from 'next/navigation';
 import { useCheckPurchaseExists, useGetArticleById } from '@/integrations/subgraph/hooks';
 import { useApolloClient } from '@/integrations/subgraph/client';
-import { use, useCallback, useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Document, Page } from 'react-pdf'
+import { Mdx } from '@/components/mdx-components'
 import { useAccount } from 'wagmi';
 import { Button } from "@/components/ui/button"
 import { useBuyArticle } from '@/integrations/payper-protocol/hooks/write';
@@ -20,8 +22,9 @@ import { UseRateArticleParams } from '@/integrations/payper-protocol/hooks/write
 
 export default function Article() {
   const [article, setArticle] = useState<ArticleData>();
-  const  [isArticlePurchased, setIsArticlePurchased] = useState<Boolean>(false);
+  const [isArticlePurchased, setIsArticlePurchased] = useState<Boolean>(false);
   const [rating, setRating] = useState<bigint>();
+  const [data, setData] = useState<any>();
   const params = useParams();
   const client = useApolloClient();
   const { address } = useAccount();
@@ -40,8 +43,15 @@ export default function Article() {
     setIsArticlePurchased(purchaseExists);
   }
 
+  const fetchContent = async (artcl: ArticleData) => {
+    const result = await fetch(artcl.encryptedUrl);
+    const data = await result.json();
+    setData(data);
+    console.log('data', data)
+  }
+
   const { sendTransaction } = useBuyArticle({
-    articleId: article?.id || BigInt(0), 
+    articleId: article?.id || BigInt(0),
     price: article?.price || BigInt(0),
   });
 
@@ -51,6 +61,11 @@ export default function Article() {
     if (!params.id) return;
     fetchArticle(Number(params.id));
   }, [params]);
+
+  useEffect(() => {
+    if (!article) return;
+    fetchContent(article);
+  }, [article])
 
   return (
     <section>
@@ -77,7 +92,7 @@ export default function Article() {
                     {newsTypeEnum[article.newsType]}
                   </div>
                   <RateArticle articleId={article.id} />
-                </div> 
+                </div>
               </div>
               <div>
                 <div
@@ -86,17 +101,20 @@ export default function Article() {
                 />
                 <Avatar journalist={article.journalist} />
               </div>
+
+            </div>
+            <div className="prose prose-stone mx-auto w-[800px] space-y-20 dark:prose-invert min-h-[500px]" >
               {isArticlePurchased
                 ? (
-                  <Document file={article.encryptedUrl} >
-                    <Page />
-                  </Document>
+                  data && (
+                    <Mdx data={data.content} />
+                  )
                 ) : (
                   <div>
-                    <h1 style={{paddingTop: "30px", fontWeight: "bold"}}>
+                    <h1 style={{ paddingTop: "30px", fontWeight: "bold" }}>
                       To unlock the full content you must purchase this article.
                     </h1>
-                    <div className="mb-4 md:mb-0 text-lg space-x-4" style={{paddingTop: "5px", paddingBottom: "5px"}}>
+                    <div className="mb-4 md:mb-0 text-lg space-x-4" style={{ paddingTop: "5px", paddingBottom: "5px" }}>
                       Price: {article.price.toString()} wei
                     </div>
                     <Button

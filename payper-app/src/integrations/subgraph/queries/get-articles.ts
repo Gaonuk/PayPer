@@ -1,6 +1,6 @@
 const getArticlesQuery = `
   query GetArticles {
-    articles(first: 5) {
+    articles(first: 10, orderDirection: desc, orderBy: date) {
       id
       name
       freeContent

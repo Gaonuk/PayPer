@@ -19,6 +19,7 @@ import { alchemyProvider } from 'wagmi/providers/alchemy';
 import { publicProvider } from 'wagmi/providers/public';
 import { ConnectKitProvider, getDefaultConfig } from "connectkit";
 import Base from '@/components/base';
+import "@/styles/editor.css"
 
 const inter = Inter({ subsets: ['latin'] })
 

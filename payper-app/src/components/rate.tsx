@@ -13,14 +13,14 @@ export function RateArticle({
 }: RateProps) {
     const [rateTerm, setRateTerm] = useState<bigint>(0n);
     const { sendTransaction } = useRateArticle({
-        articleId: articleId || BigInt(0), 
+        articleId: articleId || BigInt(0),
         rating: rateTerm || BigInt(0),
     });
     return (
-        <div 
+        <div
             className="flex w-full max-w-ssm items-center space-x-2"
-            style={{ paddingBottom: '30px', paddingTop: '20px', marginLeft: "0"  }}
-        >   
+            style={{ paddingBottom: '30px', paddingTop: '20px', marginLeft: "0" }}
+        >
             <Input
                 type="search"
                 placeholder="Rating [1-5]"

@@ -29,12 +29,12 @@ export default function Base({ children }: any) {
           <Link href="/">
             <h1 className="text-6xl md:text-8xl font-bold tracking-tighter leading-tight md:pr-8">
               PayPer.
-            </h1>            
+            </h1>
           </Link>
           <div className="flex md:justify-between space-x-10">
             {(isConnected) && (
               <>
-                <Button>+ Create Article</Button>
+                <Button onClick={() => router.push('/articles/create')}>+ Create Article</Button>
                 <Button onClick={() => router.push('/dashboard')}>
                   My Dashboard
                 </Button>
