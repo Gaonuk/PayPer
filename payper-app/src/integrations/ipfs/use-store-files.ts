@@ -1,14 +1,13 @@
-import { toast } from "@/components/ui/use-toast"
+import { CIDString } from "web3.storage/dist/src/lib/interface"
 import makeStorageClient from "./make-storage-client"
 
 export default function storeFiles(files: any[]) {
   const client = makeStorageClient()
 
-  const onRootCidReady = (cid: number) => {
+  const onRootCidReady = (cid: CIDString) => {
     console.log('uploading files with cid:', cid)
   }
 
-  // when each chunk is stored, update the percentage complete and display
   const totalSize = files.map(f => f.size).reduce((a, b) => a + b, 0)
   let uploaded = 0
 

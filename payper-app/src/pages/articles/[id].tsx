@@ -12,7 +12,6 @@ import { useApolloClient } from '@/integrations/subgraph/client';
 import { useEffect, useMemo, useState } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Mdx } from '@/components/mdx-components'
-import { Document, Page } from 'react-pdf'
 import { useAccount } from 'wagmi';
 import { Button } from "@/components/ui/button"
 import { useBuyArticle } from '@/integrations/payper-protocol/hooks/write';
@@ -25,7 +24,6 @@ export default function Article() {
   const [article, setArticle] = useState<ArticleData>();
   const [isArticlePurchased, setIsArticlePurchased] = useState<Boolean>(false);
   const [rating, setRating] = useState<bigint>();
-  const [code, setCode] = useState<string>('');
   const [data, setData] = useState<any>();
   const params = useParams();
   const client = useApolloClient();
@@ -45,9 +43,8 @@ export default function Article() {
     setIsArticlePurchased(purchaseExists);
   }
 
-  const fetchContent = async () => {
-    if (!article) return;
-    const result = await fetch(article.encryptedUrl);
+  const fetchContent = async (artcl: ArticleData) => {
+    const result = await fetch(artcl.encryptedUrl);
     const data = await result.json();
     setData(data);
     console.log('data', data)
@@ -63,8 +60,12 @@ export default function Article() {
     if (!params) return;
     if (!params.id) return;
     fetchArticle(Number(params.id));
-    fetchContent();
   }, [params]);
+
+  useEffect(() => {
+    if (!article) return;
+    fetchContent(article);
+  }, [article])
 
   return (
     <section>
@@ -103,7 +104,6 @@ export default function Article() {
 
             </div>
             <div className="prose prose-stone mx-auto w-[800px] space-y-20 dark:prose-invert min-h-[500px]" >
-
               {isArticlePurchased
                 ? (
                   data && (

@@ -4,10 +4,9 @@ module.exports = {
     es2021: true
   },
   extends: [
-    'next',
-    'airbnb',
-    'airbnb-typescript',
-    'airbnb/hooks',
+    "next/core-web-vitals",
+    "prettier",
+    "plugin:tailwindcss/recommended"
   ],
   overrides: [
     {
@@ -30,5 +29,9 @@ module.exports = {
     'react'
   ],
   rules: {
+    "@next/next/no-html-link-for-pages": "off",
+    "react/jsx-key": "off",
+    "tailwindcss/no-custom-classname": "off",
+    "tailwindcss/classnames-order": "error"
   }
 }

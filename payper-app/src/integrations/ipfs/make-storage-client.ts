@@ -1,3 +1,4 @@
+// @ts-ignore
 import { Web3Storage } from 'web3.storage'
 import getAccessToken from './get-access-token'
 
