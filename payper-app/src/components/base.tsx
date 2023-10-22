@@ -16,13 +16,14 @@ export default function Base({ preview, children }: any) {
       </Head>
       <Container>
         <section className="flex-col md:flex-row flex items-center md:justify-between mt-16 mb-16 md:mb-12">
-          <h1 className="text-6xl md:text-8xl font-bold tracking-tighter leading-tight md:pr-8">
+          <a href='/'
+            className="text-6xl md:text-8xl font-bold tracking-tighter leading-tight md:pr-8">
             PayPer.
-          </h1>
+          </a>
           <div className="flex md:justify-between space-x-10">
             {(address && !isDisconnected) && (
               <>
-                <Button>+ Create Article</Button>
+                <Button onClick={() => router.push('/articles/create')}>+ Create Article</Button>
                 <Button onClick={() => router.push('/dashboard')}>
                   My Dashboard
                 </Button>

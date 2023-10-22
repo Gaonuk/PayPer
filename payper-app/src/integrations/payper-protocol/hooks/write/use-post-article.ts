@@ -12,6 +12,8 @@ interface UsePostArticleParams {
   name: string;
   freeContent: string;
   articleUrl: string;
+  imageUrl: string;
+  videoUrl: string;
   price: bigint;
   newsType: bigint;
 }
@@ -23,6 +25,8 @@ const usePostArticle = ({
   name,
   freeContent,
   articleUrl,
+  imageUrl,
+  videoUrl,
   price,
   newsType
 }: UsePostArticleParams): UseWriteTransactionResponse => {
@@ -38,6 +42,8 @@ const usePostArticle = ({
       name,
       freeContent,
       articleUrl,
+      imageUrl,
+      videoUrl,
       price,
       newsType
     ],

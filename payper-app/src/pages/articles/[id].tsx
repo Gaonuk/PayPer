@@ -1,3 +1,5 @@
+"use client"
+
 import Avatar from '@/components/avatar'
 import DateComponent from '@/components/date'
 import CoverImage from '@/components/cover-image'
@@ -7,12 +9,14 @@ import newsTypeEnum from '@/lib/news-value';
 import { useParams } from 'next/navigation';
 import { useGetArticleById } from '@/integrations/subgraph/hooks';
 import { useApolloClient } from '@/integrations/subgraph/client';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Document, Page } from 'react-pdf'
+import { Mdx } from '@/components/mdx-components'
 
 export default function Article() {
   const [article, setArticle] = useState<ArticleData>();
+  const [code, setCode] = useState<string>('');
+  const [data, setData] = useState<any>();
   const params = useParams();
   const client = useApolloClient();
   const fetchArticle = async (articleId: number) => {
@@ -22,11 +26,21 @@ export default function Article() {
     });
     setArticle(data);
   }
+
+  const fetchContent = async () => {
+    if (!article) return;
+    const result = await fetch(article.encryptedUrl);
+    const data = await result.json();
+    setData(data);
+    console.log('data', data)
+  }
+
   useMemo(() => {
     if (!client) return;
     if (!params) return;
     if (!params.id) return;
     fetchArticle(Number(params.id));
+    fetchContent();
   }, [params]);
 
   return (
@@ -62,9 +76,14 @@ export default function Article() {
                 />
                 <Avatar journalist={article.journalist} />
               </div>
-              <Document file={article.encryptedUrl} >
-                <Page />
-              </Document>
+
+            </div>
+            <div className="prose prose-stone mx-auto w-[800px] space-y-20 dark:prose-invert min-h-[500px]" >
+              {
+                data && (
+                  <Mdx data={data.content} />
+                )
+              }
             </div>
           </>
         ) : (

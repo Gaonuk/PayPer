@@ -22,6 +22,7 @@ import { ConnectKitProvider, getDefaultConfig } from "connectkit";
 // import { Web3Auth } from "@web3auth/modal";
 // import { CHAIN_NAMESPACES } from '@web3auth/base';
 import Base from '@/components/base';
+import "@/styles/editor.css"
 
 const inter = Inter({ subsets: ['latin'] })
 
