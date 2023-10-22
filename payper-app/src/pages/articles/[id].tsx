@@ -5,26 +5,44 @@ import DateComponent from '@/components/date'
 import CoverImage from '@/components/cover-image'
 import Link from 'next/link'
 import { ArticleData } from '@/types';
-import newsTypeEnum from '@/lib/news-value';
+import { newsTypeEnum } from '@/lib/';
 import { useParams } from 'next/navigation';
-import { useGetArticleById } from '@/integrations/subgraph/hooks';
+import { useCheckPurchaseExists, useGetArticleById } from '@/integrations/subgraph/hooks';
 import { useApolloClient } from '@/integrations/subgraph/client';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Mdx } from '@/components/mdx-components'
+import { Document, Page } from 'react-pdf'
+import { useAccount } from 'wagmi';
+import { Button } from "@/components/ui/button"
+import { useBuyArticle } from '@/integrations/payper-protocol/hooks/write';
+
+import { RateArticle } from '@/components/rate';
+import { useRateArticle } from '@/integrations/payper-protocol/hooks/write';
+import { UseRateArticleParams } from '@/integrations/payper-protocol/hooks/write/use-rate-article';
 
 export default function Article() {
   const [article, setArticle] = useState<ArticleData>();
+  const [isArticlePurchased, setIsArticlePurchased] = useState<Boolean>(false);
+  const [rating, setRating] = useState<bigint>();
   const [code, setCode] = useState<string>('');
   const [data, setData] = useState<any>();
   const params = useParams();
   const client = useApolloClient();
+  const { address } = useAccount();
+
   const fetchArticle = async (articleId: number) => {
     const data = await useGetArticleById({
       client,
       articleId
     });
+    const purchaseExists = await useCheckPurchaseExists({
+      client,
+      articleId,
+      userAddress: address?.toString() || '',
+    })
     setArticle(data);
+    setIsArticlePurchased(purchaseExists);
   }
 
   const fetchContent = async () => {
@@ -35,7 +53,12 @@ export default function Article() {
     console.log('data', data)
   }
 
-  useMemo(() => {
+  const { sendTransaction } = useBuyArticle({
+    articleId: article?.id || BigInt(0),
+    price: article?.price || BigInt(0),
+  });
+
+  useEffect(() => {
     if (!client) return;
     if (!params) return;
     if (!params.id) return;
@@ -67,6 +90,7 @@ export default function Article() {
                   >
                     {newsTypeEnum[article.newsType]}
                   </div>
+                  <RateArticle articleId={article.id} />
                 </div>
               </div>
               <div>
@@ -79,11 +103,27 @@ export default function Article() {
 
             </div>
             <div className="prose prose-stone mx-auto w-[800px] space-y-20 dark:prose-invert min-h-[500px]" >
-              {
-                data && (
-                  <Mdx data={data.content} />
-                )
-              }
+
+              {isArticlePurchased
+                ? (
+                  data && (
+                    <Mdx data={data.content} />
+                  )
+                ) : (
+                  <div>
+                    <h1 style={{ paddingTop: "30px", fontWeight: "bold" }}>
+                      To unlock the full content you must purchase this article.
+                    </h1>
+                    <div className="mb-4 md:mb-0 text-lg space-x-4" style={{ paddingTop: "5px", paddingBottom: "5px" }}>
+                      Price: {article.price.toString()} wei
+                    </div>
+                    <Button
+                      onClick={sendTransaction}
+                    >
+                      Purchase
+                    </Button>
+                  </div>
+                )}
             </div>
           </>
         ) : (
@@ -96,7 +136,6 @@ export default function Article() {
           </div>
         )
       }
-
     </section>
   )
 }
